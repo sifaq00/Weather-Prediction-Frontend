@@ -1,6 +1,5 @@
 {
-  "homepage": "https://sifaq00.github.io/faqtech/",
-  "name": "compro",
+  "name": "weather-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
