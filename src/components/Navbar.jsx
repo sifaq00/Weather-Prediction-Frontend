@@ -1,35 +1,38 @@
 "use client";
 import React, { useState } from 'react';
 import { UserIcon, LogInIcon, Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/LOGO.png';
 
-const NavLink = ({ href, children, isActive, onClick }) => (
-  <a
-    href={href}
+const NavLink = ({ to, children, isActive, onClick }) => (
+  <Link
+    to={to}
     onClick={onClick}
-    className={`relative px-2 py-1 text-sm font-medium transition-colors duration-300 ${
-      isActive ? 'text-sky-500' : 'text-gray-600 hover:text-sky-500'
-    }`}
+    className={`relative px-2 py-1 text-sm font-medium transition-colors duration-300 ${isActive ? 'text-sky-500' : 'text-gray-600 hover:text-sky-500'
+      }`}
   >
     {children}
     <span
-      className={`absolute bottom-0 left-0 w-full h-0.5 bg-sky-500 transform transition-transform duration-300 ease-out ${
-        isActive ? 'scale-x-100' : 'scale-x-0'
-      }`}
+      className={`absolute bottom-0 left-0 w-full h-0.5 bg-sky-500 transform transition-transform duration-300 ease-out ${isActive ? 'scale-x-100' : 'scale-x-0'
+        }`}
     />
-  </a>
+  </Link>
 );
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState('Home');
+  const location = useLocation();
 
-  const handleLinkClick = (linkName) => {
-    setActiveLink(linkName);
+  const handleLinkClick = () => {
     setIsMenuOpen(false);
   };
 
-  const navLinks = ["Home", "Predict", "History", "About"];
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Predict", path: "/predict" },
+    { name: "History", path: "/history" },
+    { name: "About", path: "/about" }
+  ];
 
   return (
     <>
@@ -49,12 +52,12 @@ export function Navbar() {
         <div className="hidden md:flex gap-6 items-center">
           {navLinks.map((link) => (
             <NavLink
-              key={link}
-              href="#"
-              isActive={activeLink === link}
-              onClick={() => handleLinkClick(link)}
+              key={link.name}
+              to={link.path}
+              isActive={location.pathname === link.path}
+              onClick={handleLinkClick}
             >
-              {link}
+              {link.name}
             </NavLink>
           ))}
         </div>
@@ -77,21 +80,21 @@ export function Navbar() {
         </div>
       </nav>
 
-      <div 
-        className={`md:hidden fixed top-0 left-0 w-full h-full bg-white z-40 transform transition-transform duration-300 ease-in-out ${
-          isMenuOpen ? 'translate-y-0' : '-translate-y-full'
-        }`}
+      <div
+        className={`md:hidden fixed top-0 left-0 w-full h-full bg-white z-40 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'
+          }`}
       >
         <div className="flex flex-col items-center justify-center h-full gap-8 pt-20">
           {navLinks.map((link) => (
-            <a 
-              key={link}
-              href="#" 
-              className="text-2xl font-semibold text-gray-700 hover:text-sky-500"
-              onClick={() => handleLinkClick(link)}
+            <Link
+              key={link.name}
+              to={link.path}
+              className={`text-2xl font-semibold ${location.pathname === link.path ? 'text-sky-500' : 'text-gray-700 hover:text-sky-500'
+                }`}
+              onClick={handleLinkClick}
             >
-              {link}
-            </a>
+              {link.name}
+            </Link>
           ))}
           <div className="mt-8 flex flex-col gap-4 w-4/5 max-w-xs">
             <button className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full text-lg font-semibold bg-gray-100 text-gray-800">
