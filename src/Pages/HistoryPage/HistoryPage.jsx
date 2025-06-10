@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { LocationHistory } from '../components/location/LocationHistory';
-import { LocationDisplay } from '../components/location/LocationDisplay';
-import { useLocationHistory } from '../hooks/useLocationHistory';
+import { LocationHistory } from '../../components/location/LocationHistory';
+import { LocationDisplay } from '../../components/location/LocationDisplay';
+import { useLocationHistory } from '../../hooks/useLocationHistory';
 import { useNavigate } from 'react-router-dom';
 
 export function HistoryPage() {

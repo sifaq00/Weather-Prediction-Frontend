@@ -39,7 +39,7 @@ export default function Hero() {
           .then(response => response.json())
           .then(data => {
             const velocityLayer = L.velocityLayer({ displayValues: false, data: data, maxVelocity: 15 });
-            const rainLayer = L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`, { opacity: 0.6 });
+            const rainLayer = L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`, { opacity: 1 });
             const cloudLayer = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`, { opacity: 0.5 });
 
             velocityLayer.addTo(map);

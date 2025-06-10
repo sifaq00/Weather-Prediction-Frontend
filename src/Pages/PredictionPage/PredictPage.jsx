@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { LocationPicker } from '../components/location/LocationPicker';
-import { LocationDisplay } from '../components/location/LocationDisplay';
-import { WeatherCard } from '../components/weather/WeatherCard';
-import { ConfidenceIndicator } from '../components/weather/ConfidenceIndicator';
-import { useLocationHistory } from '../hooks/useLocationHistory';
-import { Toast, ToastContainer } from '../components/ui/Toast';
+import { LocationPicker } from '../../components/location/LocationPicker';
+import { LocationDisplay } from '../../components/location/LocationDisplay';
+import { WeatherCard } from '../../components/weather/WeatherCard';
+import { ConfidenceIndicator } from '../../components/weather/ConfidenceIndicator';
+import { useLocationHistory } from '../../hooks/useLocationHistory';
+import { Toast, ToastContainer } from '../../components/ui/Toast';
 
 export function PredictPage() {
     const [selectedLocation, setSelectedLocation] = useState(null);

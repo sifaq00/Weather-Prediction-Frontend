@@ -6,9 +6,9 @@ import { Navbar } from './components/Navbar';
 import Hero from './Pages/HomePage/Hero';
 import { Features } from './Pages/HomePage/Features';
 import { Footer } from './components/Footer';
-import { PredictPage } from './pages/PredictPage';
-import { HistoryPage } from './pages/HistoryPage';
-import { AboutPage } from './pages/AboutPage';
+import { PredictPage } from './Pages/PredictionPage/PredictPage';
+import { HistoryPage } from './Pages/HistoryPage/HistoryPage';
+import { AboutPage } from './Pages/AboutPage/AboutPage';
 
 function App() {
   return (
