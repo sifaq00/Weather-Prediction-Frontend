@@ -1,5 +1,5 @@
 import { Github, Twitter, Linkedin } from 'lucide-react';
-import logo from '../assets/LOGO.png'; // Pastikan path ini sesuai dengan struktur folder Anda
+import logo from '../assets/LOGO.png'; 
 
 export function Footer() {
   const footerLinks = {
@@ -37,7 +37,7 @@ export function Footer() {
                 className="w-10 h-10 object-contain rounded-full"
                 alt="WeatherWise logo"
               />
-              <span className="text-xl font-bold text-sky-600">WeatherWise</span>
+              <span className="text-xl font-bold text-sky-600">Zenith</span>
             </div>
             <p className="mt-4 text-sm text-gray-500 max-w-xs">
               Harnessing AI to deliver precise, real-time weather forecasts across the archipelago.

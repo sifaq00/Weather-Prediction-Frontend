@@ -1,211 +1,111 @@
-import React, { useState } from 'react';
-import { LocationPicker } from '../../components/location/LocationPicker';
-import { LocationDisplay } from '../../components/location/LocationDisplay';
-import { WeatherCard } from '../../components/weather/WeatherCard';
-import { ConfidenceIndicator } from '../../components/weather/ConfidenceIndicator';
-import { useLocationHistory } from '../../hooks/useLocationHistory';
+// src/Pages/PredictPage.jsx
+
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Input } from '../../components/ui/Input';
+import { Button } from '../../components/ui/Button';
+import { getPrediction } from '../../services/api';
 import { Toast, ToastContainer } from '../../components/ui/Toast';
+import { CloudSun, GitBranch } from 'lucide-react';
+function CustomPredictionForm({ onPredict, setCustomPrediction }) {
+    const [formData, setFormData] = useState({
+        temp_min_c: '19', temp_max_c: '30', temp_avg_c: '25',
+        humidity_avg_percent: '80', precip_mm: '0.5', sunshine_duration_hours: '8',
+        wind_speed_max_ms: '5.5', wind_dir_max_deg: '180', wind_speed_avg_ms: '2.1'
+    });
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        const numericFormData = Object.fromEntries(
+            Object.entries(formData).map(([key, value]) => [key, parseFloat(value)])
+        );
+        await onPredict(numericFormData);
+        setIsLoading(false);
+    };
+
+    const fields = [
+        { name: 'temp_min_c', label: 'Min Temp (°C)' }, { name: 'temp_max_c', label: 'Max Temp (°C)' },
+        { name: 'temp_avg_c', label: 'Avg Temp (°C)' }, { name: 'humidity_avg_percent', label: 'Avg Humidity (%)' },
+        { name: 'precip_mm', label: 'Precipitation (mm)' }, { name: 'sunshine_duration_hours', label: 'Sunshine (hours)' },
+        { name: 'wind_speed_max_ms', label: 'Max Wind (m/s)' }, { name: 'wind_dir_max_deg', label: 'Wind Direction (°)' },
+        { name: 'wind_speed_avg_ms', label: 'Avg Wind (m/s)' }
+    ];
+
+    return (
+        <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-lg border space-y-4">
+            <div className="flex items-center gap-3">
+                <GitBranch className="w-7 h-7 text-sky-600"/>
+                <h2 className="text-xl font-bold text-gray-800">Custom Model Prediction</h2>
+            </div>
+            <p className="text-sm text-gray-500">Masukkan 9 fitur yang dibutuhkan oleh model machine learning Anda untuk mendapatkan prediksi cuaca.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {fields.map(field => (
+                    <Input
+                        key={field.name}
+                        label={field.label}
+                        name={field.name}
+                        type="number"
+                        step="any"
+                        value={formData[field.name]}
+                        onChange={handleChange}
+                        required
+                    />
+                ))}
+            </div>
+            <div className="flex gap-4">
+                <Button type="submit" isLoading={isLoading} className="w-full" size="lg">
+                    Get Prediction
+                </Button>
+                <Button type="button" variant="secondary" onClick={() => setCustomPrediction(null)} className="w-1/3">Clear</Button>
+            </div>
+        </form>
+    );
+}
+
+CustomPredictionForm.propTypes = {
+    onPredict: PropTypes.func.isRequired,
+    setCustomPrediction: PropTypes.func.isRequired,
+};
 
 export function PredictPage() {
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [prediction, setPrediction] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [customPrediction, setCustomPrediction] = useState(null);
     const [error, setError] = useState(null);
-    const { addToHistory } = useLocationHistory();
 
-    const fetchWeatherData = async (location) => {
-        try {
-            // Using Open-Meteo API (free, no API key required)
-            const response = await fetch(
-                `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,pressure_msl,surface_pressure,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,is_day,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=auto`
-            );
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch weather data');
-            }
-
-            const data = await response.json();
-            const current = data.current;
-            const daily = data.daily;
-
-            // Map WMO Weather codes to our conditions
-            const weatherCodeMap = {
-                0: 'clear', // Clear sky
-                1: 'clear', // Mainly clear
-                2: 'partly_cloudy', // Partly cloudy
-                3: 'cloudy', // Overcast
-                45: 'fog', // Fog
-                48: 'fog', // Depositing rime fog
-                51: 'drizzle', // Light drizzle
-                53: 'drizzle', // Moderate drizzle
-                55: 'drizzle', // Dense drizzle
-                61: 'rain', // Slight rain
-                63: 'rain', // Moderate rain
-                65: 'rain', // Heavy rain
-                71: 'snow', // Slight snow
-                73: 'snow', // Moderate snow
-                75: 'snow', // Heavy snow
-                77: 'snow', // Snow grains
-                80: 'rain', // Slight rain showers
-                81: 'rain', // Moderate rain showers
-                82: 'rain', // Violent rain showers
-                85: 'snow', // Slight snow showers
-                86: 'snow', // Heavy snow showers
-                95: 'thunderstorm', // Thunderstorm
-                96: 'thunderstorm', // Thunderstorm with slight hail
-                99: 'thunderstorm', // Thunderstorm with heavy hail
-            };
-
-            // Calculate confidence based on various factors
-            const calculateConfidence = () => {
-                let confidence = 85; // Base confidence
-
-                // Adjust confidence based on forecast accuracy
-                if (current.precipitation_probability > 80) { // High probability of precipitation
-                    confidence -= 10;
-                }
-                if (current.wind_speed_10m > 20) { // High wind speeds
-                    confidence -= 5;
-                }
-                if (Math.abs(daily.temperature_2m_max[0] - daily.temperature_2m_min[0]) > 10) { // Large temperature variation
-                    confidence -= 5;
-                }
-
-                return Math.max(40, Math.min(95, confidence)); // Keep confidence between 40-95%
-            };
-
-            return {
-                temperature: Math.round(current.temperature_2m),
-                condition: weatherCodeMap[current.weather_code] || 'clear',
-                humidity: current.relative_humidity_2m,
-                windSpeed: Math.round(current.wind_speed_10m * 3.6), // Convert m/s to km/h
-                confidence: calculateConfidence(),
-                description: getWeatherDescription(current.weather_code),
-                feelsLike: Math.round(current.apparent_temperature),
-                pressure: Math.round(current.pressure_msl),
-                visibility: current.visibility / 1000, // Convert to km
-                precipitation: current.precipitation,
-                cloudCover: current.cloud_cover,
-                uvIndex: current.is_day ? 5 : 0, // Simplified UV index
-            };
-        } catch (err) {
-            console.error('Error fetching weather data:', err);
-            throw err;
-        }
-    };
-
-    const getWeatherDescription = (code) => {
-        const descriptions = {
-            0: 'Clear sky',
-            1: 'Mainly clear',
-            2: 'Partly cloudy',
-            3: 'Overcast',
-            45: 'Foggy',
-            48: 'Rime fog',
-            51: 'Light drizzle',
-            53: 'Moderate drizzle',
-            55: 'Dense drizzle',
-            61: 'Light rain',
-            63: 'Moderate rain',
-            65: 'Heavy rain',
-            71: 'Light snow',
-            73: 'Moderate snow',
-            75: 'Heavy snow',
-            77: 'Snow grains',
-            80: 'Light rain showers',
-            81: 'Moderate rain showers',
-            82: 'Violent rain showers',
-            85: 'Light snow showers',
-            86: 'Heavy snow showers',
-            95: 'Thunderstorm',
-            96: 'Thunderstorm with slight hail',
-            99: 'Thunderstorm with heavy hail',
-        };
-        return descriptions[code] || 'Unknown';
-    };
-
-    const handleLocationSelect = async (location) => {
-        setSelectedLocation(location);
-        addToHistory(location);
-        setIsLoading(true);
+    const handleCustomPredict = async (features) => {
         setError(null);
-
+        setCustomPrediction(null);
         try {
-            const weatherData = await fetchWeatherData(location);
-            setPrediction(weatherData);
+            const response = await getPrediction(features);
+            setCustomPrediction(response.data.predicted_weather);
         } catch (err) {
-            setError('Failed to fetch weather data. Please try again.');
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+            setError(err.response?.data?.error || "Gagal mendapatkan prediksi dari model.");
         }
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">Weather Prediction</h1>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <LocationPicker
-                        onLocationSelect={handleLocationSelect}
-                        className="mb-8"
-                    />
-
-                    {selectedLocation && (
-                        <LocationDisplay
-                            location={selectedLocation}
-                            className="mb-8"
-                        />
-                    )}
+        <div className="container mx-auto px-4 py-8 space-y-8">
+            <h1 className="text-3xl font-bold">Predict Weather</h1>
+            
+            <CustomPredictionForm onPredict={handleCustomPredict} setCustomPrediction={setCustomPrediction} />
+            
+            {customPrediction && (
+                <div className="p-8 bg-sky-50 rounded-lg text-center border border-sky-200 shadow-inner">
+                    <CloudSun className="w-16 h-16 text-sky-500 mx-auto animate-pulse mb-4"/>
+                    <h3 className="text-lg font-semibold text-gray-700">Your Model Prediction Result:</h3>
+                    <p className="text-4xl font-bold text-sky-600 mt-2">{customPrediction}</p>
                 </div>
-
-                <div>
-                    {isLoading ? (
-                        <div className="flex items-center justify-center h-64">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-sky-500 border-t-transparent" />
-                        </div>
-                    ) : prediction ? (
-                        <div className="space-y-6">
-                            <WeatherCard
-                                location={selectedLocation.name}
-                                temperature={prediction.temperature}
-                                condition={prediction.condition}
-                                humidity={prediction.humidity}
-                                windSpeed={prediction.windSpeed}
-                                confidence={prediction.confidence}
-                                feelsLike={prediction.feelsLike}
-                                pressure={prediction.pressure}
-                                visibility={prediction.visibility}
-                                uvIndex={prediction.uvIndex}
-                            />
-
-                            <div className="bg-white rounded-lg shadow p-6">
-                                <h2 className="text-xl font-semibold mb-4">Prediction Confidence</h2>
-                                <ConfidenceIndicator
-                                    value={prediction.confidence}
-                                    showLabel
-                                    showProgress
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="text-center text-gray-500 py-16">
-                            <p>Select a location to get weather predictions</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-
+            )}
+            
             <ToastContainer>
-                {error && (
-                    <Toast
-                        message={error}
-                        variant="error"
-                        onClose={() => setError(null)}
-                    />
-                )}
+                {error && <Toast message={error} variant="error" onClose={() => setError(null)} />}
             </ToastContainer>
         </div>
     );
-} 
+}
