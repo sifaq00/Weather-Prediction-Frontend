@@ -1,20 +1,34 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { loginUser, registerUser } from '../services/api';
+import { loginUser, registerUser, getProfile } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('access_token'));
+  const [user, setUser] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('access_token', token);
-    } else {
-      localStorage.removeItem('access_token');
-    }
+    const fetchUser = async () => {
+      if (token) {
+        localStorage.setItem('access_token', token);
+        try {
+          const response = await getProfile();
+          setUser(response.data); 
+        } catch (error) {
+          console.error("Gagal mengambil profil, token mungkin tidak valid", error);
+          setToken(null);
+          setUser(null);
+          localStorage.removeItem('access_token');
+        }
+      } else {
+        localStorage.removeItem('access_token');
+        setUser(null);
+      }
+    };
+    fetchUser();
   }, [token]);
 
   const handleLogin = async (username, password) => {
@@ -47,6 +61,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     token,
     isAuthenticated: !!token,
+    user, 
     login: handleLogin,
     register: handleRegister,
     logout: handleLogout,

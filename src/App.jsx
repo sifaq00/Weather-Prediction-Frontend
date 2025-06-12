@@ -1,11 +1,10 @@
-import { Routes, Route, useLocation } from 'react-router-dom'; 
+import { Routes, Route, useLocation } from 'react-router-dom'; // Kembalikan useLocation
 
 import { Navbar } from './components/Navbar';
 import Hero from './Pages/HomePage/Hero';
 import { Features } from './Pages/HomePage/Features';
 import { Footer } from './components/Footer';
 import { PredictPage } from './Pages/PredictionPage/PredictPage';
-import { WeeklyForecastPage } from './Pages/PredictionPage/WeeklyForecastPage';
 import { HistoryPage } from './Pages/HistoryPage/HistoryPage';
 import { AboutPage } from './Pages/AboutPage/AboutPage';
 import { LoginPage } from './Pages/AuthPage/LoginPage';
@@ -18,7 +17,7 @@ function App() {
 
   return (
     <div className="bg-white">
-      {!isAuthPage && <Navbar />}
+      <Navbar />
 
       <main>
         <Routes>
@@ -28,15 +27,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           
-          {/* BUNGKUS RUTE PRIVAT DENGAN PROTECTEDROUTE */}
           <Route path="/predict" element={
             <ProtectedRoute>
               <PredictPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/weekly-forecast" element={
-            <ProtectedRoute>
-              <WeeklyForecastPage />
             </ProtectedRoute>
           } />
           <Route path="/history" element={
