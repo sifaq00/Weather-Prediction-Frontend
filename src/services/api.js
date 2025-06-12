@@ -27,12 +27,24 @@ export const loginUser = (username, password) => {
   return api.post('/login', { username, password });
 };
 
+// Fungsi ini akan menyimpan ke riwayat
 export const getPrediction = (features) => {
   return api.post('/predict', features);
+};
+
+// Fungsi ini TIDAK akan menyimpan ke riwayat
+export const getPredictionNoSave = (features) => {
+  return api.post('/predict-no-save', features);
 };
 
 export const getHistory = () => {
   return api.get('/history');
 };
+
+// BARU: Fungsi untuk mendapatkan profil user
+export const getProfile = () => {
+  return api.get('/profile');
+};
+
 
 export default api;

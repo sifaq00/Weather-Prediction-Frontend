@@ -5,19 +5,20 @@ import { UserIcon, LogInIcon, LogOutIcon, Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/LOGO.png';
 import { useAuth } from '../context/AuthContext.jsx';
+import { cn } from '../lib/utils';
 
-const NavLink = ({ to, children, isActive, onClick }) => (
+// Komponen NavLink dengan gaya latar belakang untuk link aktif
+const NavLink = ({ to, children, isActive }) => (
   <Link
     to={to}
-    onClick={onClick}
-    className={`relative px-2 py-1 text-sm font-medium transition-colors duration-300 ${isActive ? 'text-sky-500' : 'text-gray-600 hover:text-sky-500'
-      }`}
+    className={cn(
+        "relative px-3 py-2 text-sm font-medium transition-colors duration-300 rounded-md",
+        isActive 
+            ? 'bg-sky-100 text-sky-600' 
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+      )}
   >
     {children}
-    <span
-      className={`absolute bottom-0 left-0 w-full h-0.5 bg-sky-500 transform transition-transform duration-300 ease-out ${isActive ? 'scale-x-100' : 'scale-x-0'
-        }`}
-    />
   </Link>
 );
 
@@ -25,13 +26,12 @@ NavLink.propTypes = {
   to: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   isActive: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
 };
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
@@ -46,28 +46,38 @@ export function Navbar() {
 
   return (
     <>
+      {/* Navbar sekarang selalu solid dengan latar belakang putih dan bayangan */}
       <nav
         className="sticky top-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 lg:px-8 py-3 bg-white/80 backdrop-blur-lg shadow-sm border-b border-gray-200/80"
       >
         <div className="flex items-center gap-3">
           <img src={logo} className="w-10 h-10 object-contain rounded-full" alt="WeatherWise logo"/>
-          <span className="text-xl font-bold tracking-tight text-sky-600">Zenith</span>
+          {/* Warna teks logo sekarang selalu biru langit */}
+          <span className="text-xl font-bold tracking-tight text-sky-600">
+            Zenith
+          </span>
         </div>
 
-        <div className="hidden md:flex gap-6 items-center">
+        <div className="hidden md:flex gap-2 items-center">
           {navLinks.map((link) => (
-            <NavLink key={link.name} to={link.path} isActive={location.pathname === link.path} onClick={handleLinkClick}>
+            <NavLink key={link.name} to={link.path} isActive={location.pathname === link.path}>
               {link.name}
             </NavLink>
           ))}
         </div>
 
-        <div className="hidden md:flex gap-3 items-center">
+        <div className="hidden md:flex gap-4 items-center">
           {isAuthenticated ? (
-            <button onClick={logout} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-              <LogOutIcon className="w-4 h-4" />
-              Logout
-            </button>
+            <>
+              {user && <span className="text-sm font-medium text-gray-700">Welcome, {user.username}!</span>}
+              <button 
+                onClick={logout} 
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-700 hover:bg-red-500 hover:text-white transition-all duration-200 shadow-sm"
+              >
+                <LogOutIcon className="w-4 h-4" />
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <Link to="/login" className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors duration-200">
@@ -84,11 +94,14 @@ export function Navbar() {
 
         <div className="md:hidden flex items-center">
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-full hover:bg-gray-100 transition">
-            {isMenuOpen ? <X className="w-6 h-6 text-sky-600" /> : <Menu className="w-6 h-6 text-sky-600" />}
+            <span className="text-sky-600">
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </span>
           </button>
         </div>
       </nav>
 
+      {/* Mobile Menu */}
       <div className={`md:hidden fixed top-0 left-0 w-full h-full bg-white z-40 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex flex-col items-center justify-center h-full gap-8 pt-20">
           {navLinks.map((link) => (
@@ -98,7 +111,7 @@ export function Navbar() {
           ))}
           <div className="mt-8 flex flex-col gap-4 w-4/5 max-w-xs">
             {isAuthenticated ? (
-               <button onClick={() => { logout(); handleLinkClick(); }} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full text-lg font-semibold bg-gray-100 text-gray-800">
+               <button onClick={() => { logout(); handleLinkClick(); }} className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full text-lg font-semibold bg-red-500 text-white">
                   <LogOutIcon className="w-5 h-5" />
                   Logout
                </button>

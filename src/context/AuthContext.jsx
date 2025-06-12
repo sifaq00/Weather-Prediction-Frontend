@@ -1,26 +1,42 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { loginUser, registerUser } from '../services/api';
+import { loginUser, registerUser, getProfile } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('access_token'));
+  const [user, setUser] = useState(null); // State untuk menyimpan data user
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('access_token', token);
-    } else {
-      localStorage.removeItem('access_token');
-    }
+    const fetchUser = async () => {
+      if (token) {
+        localStorage.setItem('access_token', token);
+        try {
+          const response = await getProfile();
+          setUser(response.data); // Simpan data user ke state
+        } catch (error) {
+          console.error("Gagal mengambil profil, token mungkin tidak valid", error);
+          // Jika token tidak valid, hapus
+          setToken(null);
+          setUser(null);
+          localStorage.removeItem('access_token');
+        }
+      } else {
+        localStorage.removeItem('access_token');
+        setUser(null);
+      }
+    };
+    fetchUser();
   }, [token]);
 
   const handleLogin = async (username, password) => {
     try {
       const response = await loginUser(username, password);
       setToken(response.data.access_token);
+      // setUser({ username }); // Kita sudah handle ini di useEffect, jadi ini tidak perlu
       navigate('/predict');
       return response;
     } catch (error) {
@@ -41,12 +57,14 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     setToken(null);
+    // setUser(null); // Sudah di-handle oleh useEffect
     navigate('/login');
   };
 
   const value = {
     token,
     isAuthenticated: !!token,
+    user, // Sediakan data user ke context
     login: handleLogin,
     register: handleRegister,
     logout: handleLogout,
