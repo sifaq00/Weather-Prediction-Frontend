@@ -1,4 +1,3 @@
-import React from 'react';
 import { GaugeCircle, BarChart3, History, GitFork } from 'lucide-react';
 
 const featureIcons = {
