@@ -87,7 +87,7 @@ export function Footer() {
 
         <div className="mt-10 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between">
           <p className="text-sm text-gray-500 order-2 sm:order-1 mt-4 sm:mt-0">
-            &copy; 2025 WeatherWise. All Rights Reserved.
+            &copy; 2025 Zenith. All Rights Reserved.
           </p>
           <div className="flex space-x-6 order-1 sm:order-2">
             {socialLinks.map((item) => (

@@ -46,13 +46,11 @@ export function Navbar() {
 
   return (
     <>
-      {/* Navbar sekarang selalu solid dengan latar belakang putih dan bayangan */}
       <nav
         className="sticky top-0 w-full z-50 flex justify-between items-center px-4 sm:px-6 lg:px-8 py-3 bg-white/80 backdrop-blur-lg shadow-sm border-b border-gray-200/80"
       >
         <div className="flex items-center gap-3">
           <img src={logo} className="w-10 h-10 object-contain rounded-full" alt="WeatherWise logo"/>
-          {/* Warna teks logo sekarang selalu biru langit */}
           <span className="text-xl font-bold tracking-tight text-sky-600">
             Zenith
           </span>
@@ -69,7 +67,11 @@ export function Navbar() {
         <div className="hidden md:flex gap-4 items-center">
           {isAuthenticated ? (
             <>
-              {user && <span className="text-sm font-medium text-gray-700">Welcome, {user.username}!</span>}
+              {user && (
+                <span className="text-sm font-medium text-gray-700">
+                  Welcome, <span className="font-bold text-sky-600">{user.username}</span>!
+                </span>
+              )}
               <button 
                 onClick={logout} 
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-700 hover:bg-red-500 hover:text-white transition-all duration-200 shadow-sm"

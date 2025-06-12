@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { GaugeCircle, BarChart3, History, GitFork } from 'lucide-react';
 
 const featureIcons = {
@@ -22,6 +23,12 @@ function FeatureCard({ title, description, icon }) {
     </div>
   );
 }
+
+FeatureCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  icon: PropTypes.node.isRequired,
+};
 
 export function Features() {
   const features = [

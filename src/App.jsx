@@ -12,13 +12,11 @@ import { RegisterPage } from './Pages/AuthPage/RegisterPage';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 
 function App() {
-  // Logika untuk mendeteksi halaman login/register dikembalikan
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <div className="bg-white">
-      {/* Navbar selalu tampil tanpa kondisi */}
       <Navbar />
 
       <main>
@@ -29,7 +27,6 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           
-          {/* BUNGKUS RUTE PRIVAT DENGAN PROTECTEDROUTE */}
           <Route path="/predict" element={
             <ProtectedRoute>
               <PredictPage />
@@ -44,7 +41,6 @@ function App() {
         </Routes>
       </main>
 
-      {/* Footer hanya tampil jika BUKAN halaman login/register */}
       {!isAuthPage && <Footer />}
     </div>
   );

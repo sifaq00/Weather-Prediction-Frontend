@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('access_token'));
-  const [user, setUser] = useState(null); // State untuk menyimpan data user
+  const [user, setUser] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,10 +16,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('access_token', token);
         try {
           const response = await getProfile();
-          setUser(response.data); // Simpan data user ke state
+          setUser(response.data); 
         } catch (error) {
           console.error("Gagal mengambil profil, token mungkin tidak valid", error);
-          // Jika token tidak valid, hapus
           setToken(null);
           setUser(null);
           localStorage.removeItem('access_token');
@@ -36,7 +35,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await loginUser(username, password);
       setToken(response.data.access_token);
-      // setUser({ username }); // Kita sudah handle ini di useEffect, jadi ini tidak perlu
       navigate('/predict');
       return response;
     } catch (error) {
@@ -57,14 +55,13 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     setToken(null);
-    // setUser(null); // Sudah di-handle oleh useEffect
     navigate('/login');
   };
 
   const value = {
     token,
     isAuthenticated: !!token,
-    user, // Sediakan data user ke context
+    user, 
     login: handleLogin,
     register: handleRegister,
     logout: handleLogout,

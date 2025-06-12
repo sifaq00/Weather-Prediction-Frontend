@@ -1,5 +1,3 @@
-// src/Pages/PredictionPage/PredictPage.jsx
-
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
@@ -24,7 +22,6 @@ import {
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 
-// Registrasi komponen ChartJS
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler
 );
@@ -40,7 +37,6 @@ const WeatherIcon = ({ condition, size = "large" }) => {
   };
   const baseClassName = sizes[size];
   
-  // PERBARUIAN: Menambahkan case untuk "mendung"
   switch(condition?.toLowerCase()) {
     case 'cerah':
       return <Sun className={cn(baseClassName, "text-yellow-400")} />;

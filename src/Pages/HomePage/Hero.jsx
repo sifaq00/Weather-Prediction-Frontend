@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-velocity/dist/leaflet-velocity.css';
 import 'leaflet-velocity';
+import { Link } from 'react-router-dom'; 
 
 export default function Hero() {
   const mapContainerRef = useRef(null);
@@ -81,12 +82,13 @@ export default function Hero() {
               Harnessing the power of machine learning for precise, real-time weather forecasts across the archipelago.
             </p>
           </div>
-          <button
+          <Link
+            to="/predict"
             className="mt-8 px-8 py-3 text-base font-semibold bg-sky-500 hover:bg-sky-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 pointer-events-auto"
             aria-label="Start weather prediction"
           >
             Get Started
-          </button>
+          </Link>
         </div>
       </div>
     </section>
