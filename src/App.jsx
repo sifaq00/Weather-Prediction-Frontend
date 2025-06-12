@@ -5,6 +5,7 @@ import Hero from './Pages/HomePage/Hero';
 import { Features } from './Pages/HomePage/Features';
 import { Footer } from './components/Footer';
 import { PredictPage } from './Pages/PredictionPage/PredictPage';
+import { WeeklyForecastPage } from './Pages/PredictionPage/WeeklyForecastPage';
 import { HistoryPage } from './Pages/HistoryPage/HistoryPage';
 import { AboutPage } from './Pages/AboutPage/AboutPage';
 import { LoginPage } from './Pages/AuthPage/LoginPage';
@@ -31,6 +32,11 @@ function App() {
           <Route path="/predict" element={
             <ProtectedRoute>
               <PredictPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/weekly-forecast" element={
+            <ProtectedRoute>
+              <WeeklyForecastPage />
             </ProtectedRoute>
           } />
           <Route path="/history" element={
