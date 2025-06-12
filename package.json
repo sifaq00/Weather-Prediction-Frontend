@@ -1,6 +1,5 @@
 {
-  "homepage": "https://sifaq00.github.io/faqtech/",
-  "name": "compro",
+  "name": "weather-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,6 +14,8 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.5",
     "aos": "^2.3.4",
+    "axios": "^1.9.0",
+    "chart.js": "^4.4.9",
     "clsx": "^2.1.1",
     "compro": "file:",
     "date-fns": "^4.1.0",
@@ -22,12 +23,15 @@
     "leaflet": "^1.9.4",
     "leaflet-velocity": "^2.1.4",
     "lucide-react": "^0.511.0",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^7.6.2",
     "react-scroll": "^1.9.0",
     "react-tsparticles": "^2.12.2",
+    "recharts": "^2.15.3",
     "tailwind-merge": "^3.3.0",
     "tsparticles": "^3.5.0"
   },
