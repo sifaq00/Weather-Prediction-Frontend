@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://asif512tb.pythonanywhere.com'; 
+const API_URL = 'https://asif512tb.pythonanywhere.com'; 
 
 const api = axios.create({
   baseURL: API_URL,
